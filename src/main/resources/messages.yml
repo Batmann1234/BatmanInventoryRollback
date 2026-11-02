@@ -1,0 +1,115 @@
+general:
+  prefix: '<#FFFFFF>[<#2ECC71>INVENTARIO<#FFFFFF>]&r '
+
+commands:
+  no-permission: '<#FFFFFF>¡No tienes permiso!'
+  error: '<#FFFFFF>Comando inválido.'
+  enable: '<#2ECC71>El plugin ha sido activado.'
+  disable: '<#2ECC71>El plugin ha sido desactivado.'
+  reload: '<#2ECC71>El plugin se ha recargado correctamente.'
+  player-only: '<#FFFFFF>Este comando solo puede ser ejecutado por un jugador.'
+  import: '<#2ECC71>Se importaron correctamente todos los datos de respaldo del plugin anterior.'
+
+backup:
+  no-backup: '<#FFFFFF>Actualmente no hay respaldos para <#2ECC71>%NAME%<#FFFFFF>.'
+  not-online: '<#2ECC71>%NAME% <#FFFFFF>no está conectado actualmente.'
+  force-saved-player: '<#FFFFFF>El inventario de <#2ECC71>%NAME% <#FFFFFF>ha sido guardado a la fuerza.'
+  force-saved-all: '<#FFFFFF>Los inventarios de todos los jugadores conectados han sido guardados a la fuerza.'
+  not-forced-saved: '<#FFFFFF>Hubo un problema al guardar el inventario de <#2ECC71>%NAME%<#FFFFFF>.'
+
+attribute-restore:
+  main-inventory:
+    restored: '<#FFFFFF>El inventario principal de <#2ECC71>%NAME% <#FFFFFF>ha sido restaurado.'
+    restored-player: '<#FFFFFF>Tu inventario ha sido restaurado por <#2ECC71>%NAME% <#FFFFFF>desde un respaldo.'
+    not-online: '<#FFFFFF>No puedes restaurar el inventario de <#2ECC71>%NAME% <#FFFFFF>mientras esté desconectado.'
+    button-name: '<#2ECC71>SOBRESCRIBIR inventario desde el respaldo'
+    button-disabled: '<#FFFFFF>La restauración con un solo clic está desactivada\n<#FFFFFF>en el archivo config.yml.'
+  ender-chest:
+    restored: '<#FFFFFF>El cofre de ender de <#2ECC71>%NAME% <#FFFFFF>ha sido restaurado.'
+    restored-player: '<#FFFFFF>Tu cofre de ender ha sido restaurado por <#2ECC71>%NAME% <#FFFFFF>desde un respaldo.'
+    not-online: '<#FFFFFF>No puedes restaurar el cofre de ender de <#2ECC71>%NAME% <#FFFFFF>mientras esté desconectado.'
+    button-name: '<#2ECC71>Restaurar cofre de ender'
+  health:
+    restored: '<#FFFFFF>La vida de <#2ECC71>%NAME% <#FFFFFF>ha sido restaurada.'
+    restored-player: '<#FFFFFF>Tu vida ha sido restaurada por <#2ECC71>%NAME% <#FFFFFF>desde un respaldo.'
+    not-online: '<#FFFFFF>No puedes restaurar la vida de <#2ECC71>%NAME% <#FFFFFF>mientras esté desconectado.'
+    button-name: '<#2ECC71>Restaurar vida'
+  hunger:
+    restored: '<#FFFFFF>El hambre de <#2ECC71>%NAME% <#FFFFFF>ha sido restaurada.'
+    restored-player: '<#FFFFFF>Tu hambre ha sido restaurada por <#2ECC71>%NAME% <#FFFFFF>desde un respaldo.'
+    not-online: '<#FFFFFF>No puedes restaurar el hambre de <#2ECC71>%NAME% <#FFFFFF>mientras esté desconectado.'
+    button-name: '<#2ECC71>Restaurar comida'
+  experience:
+    restored: '<#FFFFFF>La experiencia de <#2ECC71>%NAME% <#FFFFFF>ha sido establecida al nivel <#2ECC71>%XP%<#FFFFFF>.'
+    restored-player: '<#FFFFFF>Tu experiencia ha sido restaurada al nivel <#2ECC71>%XP% <#FFFFFF>por <#2ECC71>%NAME% <#FFFFFF>desde un respaldo.'
+    not-online: '<#FFFFFF>No puedes restaurar la experiencia de <#2ECC71>%NAME% <#FFFFFF>mientras esté desconectado.'
+    button-name: '<#2ECC71>Restaurar experiencia del jugador'
+    button-lore: '<#FFFFFF>Nivel <#2ECC71>%XP%'
+
+shulkerbox:
+  exported: "<#FFFFFF>Inventario exportado a shulker boxes. ¡Revisa tu inventario!"
+  button-name: "<#2ECC71>Exportar a shulker boxes"
+  first-shulker:
+    name: "<#2ECC71>Primera shulker box"
+    lore: "<#FFFFFF>Contiene la barra rápida, la armadura y la mano secundaria."
+  second-shulker:
+    name: "<#2ECC71>Segunda shulker box"
+    lore: "<#FFFFFF>Contiene los espacios del inventario principal."
+  ender-chest-shulker:
+    name: "<#2ECC71>Shulker box del cofre de ender"
+    extra-shulkers: " <#FFFFFF>(#%NUMBER%)"
+    lore: "<#FFFFFF>Contiene el inventario del cofre de ender."
+
+death-location:
+  world: '<#2ECC71>Mundo: <#FFFFFF>%WORLD%'
+  x: '<#2ECC71>X: <#FFFFFF>%X%'
+  y: '<#2ECC71>Y: <#FFFFFF>%Y%'
+  z: '<#2ECC71>Z: <#FFFFFF>%Z%'
+  reason: '<#2ECC71>Causa de muerte: <#FFFFFF>%REASON%'
+  time: '<#2ECC71>Hora: <#FFFFFF>%TIME%'
+  teleport-to: '<#FFFFFF>Teletranspórtate al lugar donde se registró esta entrada.'
+  teleport: '<#FFFFFF>Has sido teletransportado a <#2ECC71>%LOCATION%<#FFFFFF>.'
+  invalid-world: '<#FFFFFF>El mundo <#2ECC71>%WORLD% <#FFFFFF>no está cargado actualmente en el servidor.'
+
+menu-buttons:
+  main-menu: '<#FFFFFF>Menú principal'
+  next-page: '<#2ECC71>Página siguiente'
+  previous-page: '<#2ECC71>Página anterior'
+  back-page: '<#FFFFFF>Volver'
+
+# ---- Textos de los menús ----
+# Colores: &a, &l... y hex en los formatos <#RRGGBB> o &#RRGGBB
+menus:
+  titles:
+    main-menu: '<#2ECC71>&lINVENTARIO <#FFFFFF>&l» <#2ECC71>&lJugadores'
+    player-menu: '<#2ECC71>&lINVENTARIO <#FFFFFF>&l» <#2ECC71>&lDatos del jugador'
+    rollback-list: '<#2ECC71>&lINVENTARIO <#FFFFFF>&l» <#2ECC71>&lRespaldos'
+    main-backup: '<#2ECC71>&lINVENTARIO <#FFFFFF>&l» <#2ECC71>&lRespaldo de inventario'
+    ender-chest-backup: '<#2ECC71>&lINVENTARIO <#FFFFFF>&l» <#2ECC71>&lRespaldo de cofre'
+  log-buttons:
+    deaths: '<#2ECC71>&lMuertes'
+    joins: '<#2ECC71>&lEntradas'
+    quits: '<#2ECC71>&lSalidas'
+    world-changes: '<#2ECC71>&lCambios de mundo'
+    force-saves: '<#2ECC71>&lGuardados forzados'
+  lore:
+    backups-available: '<#FFFFFF>%AMOUNT% <#2ECC71>respaldo(s) disponible(s)'
+    page: '<#2ECC71>Página <#FFFFFF>%PAGE%'
+    online-now: '<#2ECC71>● En línea ahora'
+    never-played: '<#FFFFFF>Nunca ha jugado en este servidor'
+    offline: '<#FFFFFF>● Desconectado'
+    last-online: '<#2ECC71>Última conexión: <#FFFFFF>%DATE%'
+    unknown: 'Desconocida'
+    world: '<#2ECC71>Mundo: <#FFFFFF>%VALUE%'
+    x: '<#2ECC71>X: <#FFFFFF>%VALUE%'
+    y: '<#2ECC71>Y: <#FFFFFF>%VALUE%'
+    z: '<#2ECC71>Z: <#FFFFFF>%VALUE%'
+    no-location: '<#FFFFFF>No hay ubicación guardada'
+    ender-items: '<#FFFFFF>Hay objetos en el cofre de ender'
+    ender-empty: '<#FFFFFF>Vacío'
+  ping:
+    button-name: '<#2ECC71>&lPing de muerte'
+    button-lore: '<#FFFFFF>Latencia al morir: <#2ECC71>%PING% ms'
+    button-lore-unknown: '<#FFFFFF>Latencia al morir: <#2ECC71>No registrada'
+    list-line: '<#2ECC71>Ping: <#FFFFFF>%PING% ms'
+    list-line-unknown: '<#2ECC71>Ping: <#FFFFFF>No registrado'

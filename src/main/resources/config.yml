@@ -1,0 +1,91 @@
+## Desactívalo si no quieres que el plugin funcione en absoluto.
+enabled: true
+
+## Máximo de respaldos que se guardan por tipo y por usuario.
+max-saves:
+  join: 500
+  quit: 500
+  death: 500
+  world-change: 500
+  force: 500
+
+## Número de líneas visibles en los respaldos (máximo: 5)
+backup-lines-visible: 4
+
+## Ruta de la carpeta donde se guardan los datos. Usa "DEFAULT" para dejarlos en la carpeta del plugin.
+folder-location: 'DEFAULT'
+
+## Si se activa, se desactivan los respaldos en archivos YAML y se usa MySQL.
+## Requiere un servidor MySQL.
+mysql:
+  enabled: false
+  details:
+    host: 'localhost'
+    port: 3306
+    database: 'inventory_rollback'
+    table-prefix: 'backup_'
+    username: 'username'
+    password: 'password'
+    use-SSL: true
+    verifyCertificate: true
+    allowPubKeyRetrieval: false
+  pool:
+    ## Número máximo de conexiones en el pool
+    maximum-pool-size: 10
+    ## Número mínimo de conexiones inactivas a mantener
+    minimum-idle: 2
+    ## Tiempo de espera de conexión en milisegundos (30000 = 30 segundos)
+    connection-timeout: 30000
+    ## Activa el caché de sentencias preparadas para mejor rendimiento
+    cache-prep-stmts: true
+    ## Número de sentencias preparadas a guardar en caché por conexión
+    prep-stmt-cache-size: 250
+    ## Longitud máxima de SQL a guardar en caché (en caracteres)
+    prep-stmt-cache-sql-limit: 2048
+
+## Se reproducirán sonidos al jugador cuando se restauren partes de su personaje.
+sounds:
+  teleport:
+    enabled: true
+  inventory:
+    enabled: true
+  food:
+    enabled: true
+  hunger:
+    enabled: true
+  xp:
+    enabled: true
+    
+## Define cómo se muestra la hora en los respaldos.
+## Puedes usar tu zona horaria (EST, PST, GMT, ...) o un desfase UTC (UTC+1, UTC-5, ...).
+## Hora de Costa Rica (UTC-6, sin horario de verano).
+time-zone: 'America/Costa_Rica'
+## Para más información sobre el formato de la hora, consulta: https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
+time-format: 'dd/MM/yyyy hh:mm:ss a z'
+
+## Elige si se debe esperar a que otros plugins gestionen la muerte del jugador.
+## En false, el plugin gestiona el evento de muerte de inmediato (antes que la mayoría de plugins).
+## En true, el plugin espera a que otros plugins gestionen primero el evento de muerte (después de la mayoría).
+## --
+## NOTA #1: Algunos plugins también intentan ser los primeros en gestionar la muerte de un jugador.
+##          Si es así, pueden sobrescribir el inventario del jugador antes de que este plugin lo guarde.
+## NOTA #2: Si dependes de poder editar el inventario del jugador al morir, ponlo en true.
+allow-other-plugins-edit-death-inventory: false
+
+## Al activar esta opción se muestra un botón para restaurar por completo el respaldo de un jugador conectado.
+## Esto sobrescribe por completo su inventario actual y borra lo que tenga sin hacer un respaldo antes.
+restore-to-player-button: true
+
+## Cámbialo a 'false' para no guardar si el inventario del jugador está vacío
+save-empty-inventories: true
+      
+## Busca actualizaciones en Spigot al iniciar el servidor.
+## Desactivado porque este plugin es una versión modificada (BatmanInventoryRollback).
+update-checker: false
+
+## Permite que bStats recopile datos anónimos del servidor.
+## Por favor déjalo activado, ayuda a mejorar el plugin y a ofrecer mejores funciones.
+bStats: true
+
+# Modo debug: imprime información adicional en la consola.
+debug: false

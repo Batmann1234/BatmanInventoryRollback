@@ -1,6 +1,7 @@
 package me.danjono.inventoryrollback.data;
 
 import com.nuclyon.technicallycoded.inventoryrollback.InventoryRollbackPlus;
+import com.nuclyon.technicallycoded.inventoryrollback.util.PlayerKey;
 import me.danjono.inventoryrollback.config.ConfigData;
 import me.danjono.inventoryrollback.config.MessageData;
 import me.danjono.inventoryrollback.gui.InventoryName;
@@ -22,7 +23,7 @@ import java.util.UUID;
 
 public class YAML {
 
-    private final UUID uuid;
+    private final String playerKey;
     private final Long timestamp;
     private final File playerBackupFolder;
     private final File backupFile;
@@ -45,11 +46,11 @@ public class YAML {
 
     private static final String backupFolderName = "backups";
 
-    public YAML(UUID uuid, LogType logType, Long timestampIn) {
-        this.uuid = uuid;
+    public YAML(String playerKey, LogType logType, Long timestampIn) {
+        this.playerKey = playerKey;
         this.logType = logType;
         this.timestamp = timestampIn;
-        this.playerBackupFolder = getPlayerBackupLocation(logType, uuid);
+        this.playerBackupFolder = getPlayerBackupLocation(logType, playerKey);
         this.backupFile = new File (playerBackupFolder, timestamp + ".yml");
         this.data = YamlConfiguration.loadConfiguration(backupFile);
     }
@@ -108,8 +109,13 @@ public class YAML {
         return backupLocation;
     }
 
-    private static File getPlayerBackupLocation(LogType backupLogType, UUID playerUUID) {
-        return new File(getBackupFolderForLogType(backupLogType), playerUUID.toString());
+    private static File getPlayerBackupLocation(LogType backupLogType, String playerKey) {
+        return new File(getBackupFolderForLogType(backupLogType), playerKey);
+    }
+
+    /** Carpeta que contiene las carpetas de jugadores de un tipo de log (usado por la migracion). */
+    public static File getLogTypeFolder(LogType backupLogType) {
+        return getBackupFolderForLogType(backupLogType);
     }
 
     public boolean doesBackupTypeExist() {
@@ -417,7 +423,7 @@ public class YAML {
                         Long timestamp = Long.parseLong(time);
                         UUID uuid = UUID.fromString(backup.getName().substring(0, backup.getName().length() - 4)); 
 
-                        YAML yaml = new YAML(uuid, log, timestamp);
+                        YAML yaml = new YAML(PlayerKey.of(org.bukkit.Bukkit.getOfflinePlayer(uuid)), log, timestamp);
 
                         String packageVersion = data.getString("data." + timestamp + ".version");
 

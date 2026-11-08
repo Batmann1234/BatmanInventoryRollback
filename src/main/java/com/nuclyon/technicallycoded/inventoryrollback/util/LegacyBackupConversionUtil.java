@@ -164,7 +164,7 @@ public class LegacyBackupConversionUtil {
 
                 // ---- Process all loaded data ----
 
-                PlayerData importedData = new PlayerData(uuid, logTypeProcessing, timestamp);
+                PlayerData importedData = new PlayerData(org.bukkit.Bukkit.getOfflinePlayer(uuid), logTypeProcessing, timestamp);
 
                 importedData.setMainInventory(mainInvItems);
                 importedData.setArmour(armorItems);

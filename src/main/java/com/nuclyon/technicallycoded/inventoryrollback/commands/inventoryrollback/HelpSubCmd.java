@@ -16,7 +16,7 @@ public class HelpSubCmd extends IRPCommand {
 
     @Override
     public void onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (sender.hasPermission("inventoryrollbackplus.help")) {
+        if (sender.hasPermission("batmaninventoryrollback.help")) {
             this.sendHelp(sender);
         } else {
             sender.sendMessage(MessageData.getPluginPrefix() + MessageData.getNoPermission());

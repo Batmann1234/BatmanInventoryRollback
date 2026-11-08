@@ -3,9 +3,9 @@ package me.danjono.inventoryrollback.gui.menu;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import com.nuclyon.technicallycoded.inventoryrollback.util.PlayerKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -27,7 +27,7 @@ public class PlayerMenu {
     public PlayerMenu(Player staff, OfflinePlayer player) {
         this.staff = staff;
         this.offlinePlayer = player;
-        this.buttons = new Buttons(player.getUniqueId());
+        this.buttons = new Buttons(player);
 
         createInventory();
     }
@@ -66,13 +66,13 @@ public class PlayerMenu {
         }
         
         inventory.setItem(0, buttons.playerHead(lore, true));
-        UUID uuid = offlinePlayer.getUniqueId();
+        String key = PlayerKey.of(offlinePlayer);
 
-        PlayerData deathBackup = new PlayerData(uuid, LogType.DEATH, null);
-        PlayerData joinBackup = new PlayerData(uuid, LogType.JOIN, null);
-        PlayerData quitBackup = new PlayerData(uuid, LogType.QUIT, null);
-        PlayerData worldChangeBackup = new PlayerData(uuid, LogType.WORLD_CHANGE, null);
-        PlayerData forceSaveBackup = new PlayerData(uuid, LogType.FORCE, null);
+        PlayerData deathBackup = new PlayerData(key, LogType.DEATH, null);
+        PlayerData joinBackup = new PlayerData(key, LogType.JOIN, null);
+        PlayerData quitBackup = new PlayerData(key, LogType.QUIT, null);
+        PlayerData worldChangeBackup = new PlayerData(key, LogType.WORLD_CHANGE, null);
+        PlayerData forceSaveBackup = new PlayerData(key, LogType.FORCE, null);
 
         if (!joinBackup.doesBackupTypeExist()
                 && !quitBackup.doesBackupTypeExist()

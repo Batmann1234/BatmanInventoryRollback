@@ -168,6 +168,13 @@ public class ConfigData {
             saveConfig();
     }
 
+    /** Cambia el estado del plugin y lo guarda en config.yml (para que sobreviva a /reload y reinicios). */
+    public void persistEnabled(boolean enabled) {
+        setEnabled(enabled);
+        configuration.set("enabled", enabled);
+        saveConfig();
+    }
+
     public static void setEnabled(boolean enabled) {        
         pluginEnabled = enabled;
     }

@@ -1,6 +1,6 @@
 # Translation by https://github.com/molocodev
 general:
-  prefix: '&f[&bInventoryRollbackPlus&f]&r '
+  prefix: '&f[&bBatmanInventoryRollback&f]&r '
 
 commands:
   no-permission: '&c¡No tienes permisos!'

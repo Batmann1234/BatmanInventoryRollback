@@ -73,7 +73,7 @@ public class SaveInventory {
 
         boolean saveAsync = !InventoryRollbackPlus.getInstance().isShuttingDown() && async;
         Runnable saveTask = () -> {
-            if (pingAtSave >= 0) PingStore.set(uuid, timestamp, pingAtSave);
+            if (pingAtSave >= 0) PingStore.set(com.nuclyon.technicallycoded.inventoryrollback.util.PlayerKey.of(player), timestamp, pingAtSave);
 
             PlayerData data = new PlayerData(player, logType, timestamp);
 

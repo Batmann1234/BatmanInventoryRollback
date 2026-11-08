@@ -16,7 +16,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class EnderChestBackupMenu {
 
@@ -25,7 +24,7 @@ public class EnderChestBackupMenu {
     private int pageNumber;
 
     private Player staff;
-    private UUID playerUUID;
+    private String playerKey;
     private LogType logType;
     private Long timestamp;
     private ItemStack[] enderchest;
@@ -37,12 +36,12 @@ public class EnderChestBackupMenu {
         this.main = InventoryRollbackPlus.getInstance();
 
         this.staff = staff;
-        this.playerUUID = data.getOfflinePlayer().getUniqueId();
+        this.playerKey = data.getPlayerKey();
         this.logType = data.getLogType();
         this.timestamp = data.getTimestamp();
         this.enderchest = data.getEnderChest();
         this.pageNumber = pageNumberIn;
-        this.buttons = new Buttons(playerUUID);
+        this.buttons = new Buttons(playerKey);
         
         createInventory();
     }

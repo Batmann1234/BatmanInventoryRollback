@@ -15,7 +15,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -25,7 +24,7 @@ public class MainInventoryBackupMenu {
 	private final InventoryRollbackPlus main;
 
 	private final Player staff;
-	private final UUID playerUUID;
+	private final String playerKey;
 	private final LogType logType;
 	private final Long timestamp;
 	private final ItemStack[] mainInventory;
@@ -46,7 +45,7 @@ public class MainInventoryBackupMenu {
 		this.main = InventoryRollbackPlus.getInstance();
 
 		this.staff = staff;
-		this.playerUUID = data.getOfflinePlayer().getUniqueId();
+		this.playerKey = data.getPlayerKey();
 		this.logType = data.getLogType();
 		this.timestamp = data.getTimestamp();
 		this.mainInventory = data.getMainInventory();
@@ -58,7 +57,7 @@ public class MainInventoryBackupMenu {
 		this.saturation = data.getSaturation();
 		this.xp = data.getXP();
 		
-		this.buttons = new Buttons(playerUUID);
+		this.buttons = new Buttons(playerKey);
 
 		this.mainInvLen = mainInventory == null ? 0 : mainInventory.length;
 		
@@ -92,7 +91,7 @@ public class MainInventoryBackupMenu {
 
 		//Add death ping button (solo en muertes)
 		if (logType == LogType.DEATH)
-			inventory.setItem(46, buttons.pingButton(PingStore.get(playerUUID, timestamp)));
+			inventory.setItem(46, buttons.pingButton(PingStore.get(playerKey, timestamp)));
 
 		//Add health icon
 		inventory.setItem(51, buttons.healthButton(logType, health));

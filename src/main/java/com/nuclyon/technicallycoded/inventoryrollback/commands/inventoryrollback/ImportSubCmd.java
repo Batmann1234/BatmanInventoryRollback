@@ -21,7 +21,7 @@ public class ImportSubCmd extends IRPCommand {
 
     @Override
     public void onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (sender.hasPermission("inventoryrollbackplus.import")) {
+        if (sender.hasPermission("batmaninventoryrollback.import")) {
 
             // Check that player confirms this operation
             if (args.length < 2 || !args[1].equalsIgnoreCase("confirm")) {

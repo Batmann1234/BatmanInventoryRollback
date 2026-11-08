@@ -92,6 +92,9 @@ public abstract class InventoryRollback extends JavaPlugin {
             }
         }
 
+        // Migra backups viejos guardados por UUID a la clave por nombre
+        com.nuclyon.technicallycoded.inventoryrollback.util.PlayerKeyMigration.runAsync();
+
         new MessageData().setMessages();
         new SoundData().setSounds();
 

@@ -68,11 +68,11 @@ public class EventLogs implements Listener {
 		if (!ConfigData.isEnabled()) return;
 
 		Player player = e.getPlayer();
-		if (player.hasPermission("inventoryrollbackplus.joinsave")) {
+		if (player.hasPermission("batmaninventoryrollback.joinsave")) {
 			new SaveInventory(e.getPlayer(), LogType.JOIN, null, null)
 					.snapshotAndSave(player.getInventory(), player.getEnderChest(), true);
 		}
-		if (player.hasPermission("inventoryrollbackplus.adminalerts")) {
+		if (player.hasPermission("batmaninventoryrollback.adminalerts")) {
 			// can send info to admins here
 		}
 	}
@@ -83,7 +83,7 @@ public class EventLogs implements Listener {
 
 		Player player = e.getPlayer();
 
-		if (player.hasPermission("inventoryrollbackplus.leavesave")) {
+		if (player.hasPermission("batmaninventoryrollback.leavesave")) {
 			new SaveInventory(e.getPlayer(), LogType.QUIT, null, null)
 					.snapshotAndSave(player.getInventory(), player.getEnderChest(), true);
 		}
@@ -194,7 +194,7 @@ public class EventLogs implements Listener {
         Player player = event.getEntity();
 
 		// Check that the player has the permission for inventory saves
-        if (player.hasPermission("inventoryrollbackplus.deathsave")) {
+        if (player.hasPermission("batmaninventoryrollback.deathsave")) {
 
             EntityDamageEvent damageEvent = event.getEntity().getLastDamageCause();
 			DetailedReason detailedReason = getDetailedReason(damageEvent);
@@ -223,7 +223,7 @@ public class EventLogs implements Listener {
 
 		Player player = e.getPlayer();
 
-		if (player.hasPermission("inventoryrollbackplus.worldchangesave")) {
+		if (player.hasPermission("batmaninventoryrollback.worldchangesave")) {
 			new SaveInventory(e.getPlayer(), LogType.WORLD_CHANGE, null, null)
 					.snapshotAndSave(player.getInventory(), player.getEnderChest(), true);
 		}

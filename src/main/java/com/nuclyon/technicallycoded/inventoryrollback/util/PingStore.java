@@ -9,12 +9,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 import java.util.logging.Level;
 
 /**
  * Guarda el ping de cada muerte en pings.yml (funciona tanto con YAML como con MySQL).
- * Formato: <uuid>.<timestamp>: ping
+ * Formato: <nombre-en-minusculas>.<timestamp>: ping
  */
 public final class PingStore {
 
@@ -32,20 +31,40 @@ public final class PingStore {
         config = YamlConfiguration.loadConfiguration(file);
     }
 
-    public static synchronized void set(UUID uuid, long timestamp, int ping) {
+    public static synchronized void set(String playerKey, long timestamp, int ping) {
         load();
-        String base = uuid.toString();
+        String base = playerKey;
         config.set(base + "." + timestamp, ping);
         prune(base);
         save();
     }
 
     /** @return ping guardado, o null si no hay registro. */
-    public static synchronized Integer get(UUID uuid, long timestamp) {
+    public static synchronized Integer get(String playerKey, long timestamp) {
         load();
-        String path = uuid.toString() + "." + timestamp;
+        String path = playerKey + "." + timestamp;
         if (!config.contains(path)) return null;
         return config.getInt(path);
+    }
+
+    /** Claves actuales de primer nivel (usado por la migracion UUID -> nombre). */
+    public static synchronized List<String> getKeys() {
+        load();
+        return new ArrayList<>(config.getKeys(false));
+    }
+
+    /** Mueve los pings de una clave a otra, mezclandolos si la nueva ya existe. */
+    public static synchronized void renameKey(String from, String to) {
+        load();
+        if (from.equals(to) || config.getConfigurationSection(from) == null) return;
+
+        for (String time : config.getConfigurationSection(from).getKeys(false)) {
+            String target = to + "." + time;
+            if (!config.contains(target)) config.set(target, config.get(from + "." + time));
+        }
+        config.set(from, null);
+        prune(to);
+        save();
     }
 
     private static void prune(String base) {

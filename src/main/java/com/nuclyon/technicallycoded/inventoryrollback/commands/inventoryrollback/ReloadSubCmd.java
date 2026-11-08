@@ -15,7 +15,7 @@ public class ReloadSubCmd extends IRPCommand {
 
     @Override
     public void onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (sender.hasPermission("inventoryrollbackplus.reload")) {
+        if (sender.hasPermission("batmaninventoryrollback.reload")) {
             ConfigData config = main.getConfigData();
             config.generateConfigFile();
             config.setVariables();

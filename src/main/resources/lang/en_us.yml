@@ -1,6 +1,6 @@
 # Original messages by https://github.com/danjono & https://github.com/TechnicallyCoded
 general:
-  prefix: '&f[&bInventoryRollbackPlus&f]&r '
+  prefix: '&f[&bBatmanInventoryRollback&f]&r '
 
 commands:
   no-permission: '&cYou do not have permission!'

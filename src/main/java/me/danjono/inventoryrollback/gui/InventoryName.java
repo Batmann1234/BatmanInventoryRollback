@@ -6,7 +6,7 @@ import me.danjono.inventoryrollback.config.MessageData;
 
 public enum InventoryName {
 
-    MAIN_MENU("menus.titles.main-menu", 36),
+    MAIN_MENU("menus.titles.main-menu", 54),
     PLAYER_MENU("menus.titles.player-menu", 9),
     ROLLBACK_LIST("menus.titles.rollback-list", ConfigData.getBackupLinesVisible() * 9 + 9),
     MAIN_BACKUP("menus.titles.main-backup", 54),

@@ -113,7 +113,7 @@ public class InventoryRollbackPlus extends InventoryRollback {
         // Save all inventories
         getLogger().info("Saving player inventories...");
         for (Player player : this.getServer().getOnlinePlayers()) {
-            if (player.hasPermission("inventoryrollbackplus.leavesave")) {
+            if (player.hasPermission("batmaninventoryrollback.leavesave")) {
                 new SaveInventory(player, LogType.QUIT, null, null)
                         .snapshotAndSave(player.getInventory(), player.getEnderChest(), false);
             }

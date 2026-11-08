@@ -5,10 +5,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import com.nuclyon.technicallycoded.inventoryrollback.InventoryRollbackPlus;
+import com.nuclyon.technicallycoded.inventoryrollback.util.PlayerKey;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
@@ -20,42 +20,34 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class PlayerData {
 
-    private final OfflinePlayer offlinePlayer;
+    private final String playerKey;
     private final LogType logType;
     private final Long timestamp;
 
     private YAML yaml;
     private MySQL mysql;
-    
+
     public PlayerData(OfflinePlayer offlinePlayer, LogType logType, Long timestamp) {
-        this.offlinePlayer = offlinePlayer;
+        this(PlayerKey.of(offlinePlayer), logType, timestamp);
+    }
+
+    /** @param playerKey nombre del jugador en minusculas (ver {@link PlayerKey}) */
+    public PlayerData(String playerKey, LogType logType, Long timestamp) {
+        this.playerKey = playerKey;
         this.logType = logType;
         this.timestamp = timestamp;
 
         if (ConfigData.getSaveType() == SaveType.YAML) {
-            yaml = new YAML(offlinePlayer.getUniqueId(), logType, timestamp);
+            yaml = new YAML(playerKey, logType, timestamp);
         } else if (ConfigData.getSaveType() == SaveType.MYSQL) {
-            mysql = new MySQL(offlinePlayer.getUniqueId(), logType, timestamp);
+            mysql = new MySQL(playerKey, logType, timestamp);
         }
     }
 
-    public PlayerData(UUID uuid, LogType logType, Long timestamp) {
-        this.offlinePlayer = Bukkit.getOfflinePlayer(uuid);
-        this.logType = logType;
-        this.timestamp = timestamp;
+    public String getPlayerKey() {
+        return this.playerKey;
+    }
 
-        if (ConfigData.getSaveType() == SaveType.YAML) {
-            yaml = new YAML(uuid, logType, timestamp);
-        } else if (ConfigData.getSaveType() == SaveType.MYSQL) {
-            mysql = new MySQL(uuid, logType, timestamp);
-        }
-    }
-        
-    public OfflinePlayer getOfflinePlayer() {
-        return this.offlinePlayer;
-        
-    }
-    
     public LogType getLogType() {
         return this.logType;
     }

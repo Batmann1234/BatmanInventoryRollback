@@ -24,7 +24,7 @@ public class RestoreSubCmd extends IRPCommand {
     @Override
     public void onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender instanceof Player) {
-            if (sender.hasPermission("inventoryrollbackplus.viewbackups")) {
+            if (sender.hasPermission("batmaninventoryrollback.viewbackups")) {
                 if (!ConfigData.isEnabled()) {
                     sender.sendMessage(MessageData.getPluginPrefix() + MessageData.getPluginDisabled());
                     return;

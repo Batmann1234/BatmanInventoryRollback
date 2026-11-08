@@ -17,16 +17,18 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 
+import com.nuclyon.technicallycoded.inventoryrollback.util.PlayerKey;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class Buttons {
 
-    private UUID uuid;
+    /** Nombre del jugador en minusculas; se guarda en el item (tag "uuid" por compatibilidad). */
+    private String playerKey;
+    private OfflinePlayer player;
 
     private static final Material death = Material.BONE;
 
@@ -74,12 +76,13 @@ public class Buttons {
                     Material.SHULKER_BOX : Material.BARRIER;
 
 
-    public Buttons(UUID uuid) {
-        this.uuid = uuid;
+    public Buttons(String playerKey) {
+        this.playerKey = playerKey;
     }
     
     public Buttons(OfflinePlayer player) {
-        this.uuid = player.getUniqueId();
+        this.player = player;
+        this.playerKey = PlayerKey.of(player);
     }
     
     public static Material getDeathLogIcon() {
@@ -164,7 +167,7 @@ public class Buttons {
 
         CustomDataItemEditor editor = CustomDataItemEditor.editItem(button);
 
-        editor.setString("uuid", uuid.toString());
+        editor.setString("uuid", playerKey);
         editor.setString("logType", logType.name());
         editor.setInt("page", page);
         button = editor.setItemData();
@@ -196,7 +199,7 @@ public class Buttons {
 
         CustomDataItemEditor nbt = CustomDataItemEditor.editItem(button);
 
-        nbt.setString("uuid", uuid.toString());
+        nbt.setString("uuid", playerKey);
         nbt.setString("logType", logType.name());
         nbt.setInt("page", page);
         button = nbt.setItemData();
@@ -226,7 +229,7 @@ public class Buttons {
 
         CustomDataItemEditor nbt = CustomDataItemEditor.editItem(button);
 
-        nbt.setString("uuid", uuid.toString());
+        nbt.setString("uuid", playerKey);
         nbt.setString("logType", logType.name());
         nbt.setLong("timestamp", timestamp);
         nbt.setInt("page", page);
@@ -259,7 +262,7 @@ public class Buttons {
 
         CustomDataItemEditor nbt = CustomDataItemEditor.editItem(button);
 
-        nbt.setString("uuid", uuid.toString());
+        nbt.setString("uuid", playerKey);
         nbt.setString("logType", logType.name());
         nbt.setLong("timestamp", timestamp);
         nbt.setInt("page", page);
@@ -289,7 +292,7 @@ public class Buttons {
 
         CustomDataItemEditor nbt = CustomDataItemEditor.editItem(button);
 
-        nbt.setString("uuid", uuid.toString());
+        nbt.setString("uuid", playerKey);
         button = nbt.setItemData();
 
         return button;
@@ -315,7 +318,7 @@ public class Buttons {
 
         CustomDataItemEditor nbt = CustomDataItemEditor.editItem(button);
 
-        nbt.setString("uuid", uuid.toString());
+        nbt.setString("uuid", playerKey);
         nbt.setString("logType", logType.name());
         nbt.setLong("timestamp", timestamp);
         nbt.setInt("page", 0);
@@ -339,7 +342,7 @@ public class Buttons {
 
         CustomDataItemEditor nbt = CustomDataItemEditor.editItem(item);
 
-        nbt.setString("uuid", uuid.toString());
+        nbt.setString("uuid", playerKey);
         nbt.setString("logType", logType.name());
         nbt.setLong("timestamp", time);
         nbt.setString("location", location);
@@ -363,7 +366,7 @@ public class Buttons {
 
         CustomDataItemEditor nbt = CustomDataItemEditor.editItem(item);
 
-        nbt.setString("uuid", uuid.toString());
+        nbt.setString("uuid", playerKey);
         nbt.setString("logType", logType.name());
         item = nbt.setItemData();
 
@@ -385,7 +388,7 @@ public class Buttons {
 
         CustomDataItemEditor nbt = CustomDataItemEditor.editItem(item);
 
-        nbt.setString("uuid", uuid.toString());
+        nbt.setString("uuid", playerKey);
         nbt.setString("logType", logType.name());
         item = nbt.setItemData();
 
@@ -407,7 +410,7 @@ public class Buttons {
 
         CustomDataItemEditor nbt = CustomDataItemEditor.editItem(item);
 
-        nbt.setString("uuid", uuid.toString());
+        nbt.setString("uuid", playerKey);
         nbt.setString("logType", logType.name());
         item = nbt.setItemData();
 
@@ -429,7 +432,7 @@ public class Buttons {
 
         CustomDataItemEditor nbt = CustomDataItemEditor.editItem(item);
 
-        nbt.setString("uuid", uuid.toString());
+        nbt.setString("uuid", playerKey);
         nbt.setString("logType", logType.name());
         item = nbt.setItemData();
 
@@ -451,7 +454,7 @@ public class Buttons {
 
         CustomDataItemEditor nbt = CustomDataItemEditor.editItem(item);
 
-        nbt.setString("uuid", uuid.toString());
+        nbt.setString("uuid", playerKey);
         nbt.setString("logType", logType.name());
         item = nbt.setItemData();
 
@@ -459,11 +462,11 @@ public class Buttons {
     }
 
     public ItemStack playerHead(List<String> lore, boolean setSkin) {    	
-        if (uuid == null)
+        if (playerKey == null)
             return null;
         
         ItemStack skull = null;
-        OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
+        OfflinePlayer player = this.player != null ? this.player : Bukkit.getOfflinePlayer(playerKey);
         
         if (InventoryRollbackPlus.getInstance().getVersion().greaterOrEqThan(BukkitVersion.v1_13_R1)) {
             skull = new ItemStack(Material.PLAYER_HEAD);
@@ -508,7 +511,7 @@ public class Buttons {
         
         CustomDataItemEditor nbt = CustomDataItemEditor.editItem(skull);
         
-        nbt.setString("uuid", uuid + "");
+        nbt.setString("uuid", playerKey);
         skull = nbt.setItemData();
 
         return skull;
@@ -537,7 +540,7 @@ public class Buttons {
 
         CustomDataItemEditor nbt = CustomDataItemEditor.editItem(item);
 
-        nbt.setString("uuid", uuid.toString());
+        nbt.setString("uuid", playerKey);
         nbt.setString("logType", logType.name());
         nbt.setString("location", location);
         item = nbt.setItemData();
@@ -565,7 +568,7 @@ public class Buttons {
 
         CustomDataItemEditor nbt = CustomDataItemEditor.editItem(item);
 
-        nbt.setString("uuid", uuid.toString());
+        nbt.setString("uuid", playerKey);
         nbt.setString("logType", logType.name());
         nbt.setLong("timestamp", timestamp);
         item = nbt.setItemData();
@@ -584,7 +587,7 @@ public class Buttons {
 
         CustomDataItemEditor nbt = CustomDataItemEditor.editItem(item);
 
-        nbt.setString("uuid", uuid.toString());
+        nbt.setString("uuid", playerKey);
         nbt.setString("logType", logType.name());
         nbt.setDouble("health", health);
         item = nbt.setItemData();
@@ -603,7 +606,7 @@ public class Buttons {
 
         CustomDataItemEditor nbt = CustomDataItemEditor.editItem(item);
 
-        nbt.setString("uuid", uuid.toString());
+        nbt.setString("uuid", playerKey);
         nbt.setString("logType", logType.name());
         nbt.setInt("hunger", hunger);
         nbt.setFloat("saturation", saturation);
@@ -627,7 +630,7 @@ public class Buttons {
 
         CustomDataItemEditor nbt = CustomDataItemEditor.editItem(item);
 
-        nbt.setString("uuid", uuid.toString());
+        nbt.setString("uuid", playerKey);
         nbt.setString("logType", logType.name());
         nbt.setFloat("xp", xp);
         item = nbt.setItemData();
@@ -646,7 +649,7 @@ public class Buttons {
 
         CustomDataItemEditor nbt = CustomDataItemEditor.editItem(item);
 
-        nbt.setString("uuid", uuid.toString());
+        nbt.setString("uuid", playerKey);
         nbt.setString("logType", logType.name());
         nbt.setLong("timestamp", timestamp);
         item = nbt.setItemData();
@@ -674,7 +677,7 @@ public class Buttons {
 
         CustomDataItemEditor nbt = CustomDataItemEditor.editItem(item);
 
-        nbt.setString("uuid", uuid.toString());
+        nbt.setString("uuid", playerKey);
         nbt.setString("logType", logType.name());
         nbt.setLong("timestamp", timestamp);
         item = nbt.setItemData();
@@ -754,6 +757,46 @@ public class Buttons {
         }
     }
 
+    /** Primer material que exista en esta version del servidor (si ninguno existe, papel). */
+    public static Material icon(String... names) {
+        for (String name : names) {
+            Material material = Material.matchMaterial(name);
+            if (material != null) return material;
+        }
+        return Material.PAPER;
+    }
+
+    /** Divide un texto de menu en lineas (acepta "\\n" escrito en el yml o saltos reales). */
+    public static List<String> splitLines(String text) {
+        List<String> lines = new ArrayList<>();
+        for (String line : text.split("\\n|\n")) lines.add(line);
+        return lines;
+    }
+
+    /**
+     * Boton de accion para el menu principal. Guarda en el item la accion y datos extra
+     * (el tag "uuid" se rellena siempre porque el listener lo usa para reconocer los botones del plugin).
+     */
+    public static ItemStack actionButton(Material material, String name, List<String> lore, String action, String ownerKey, String... extraKeyValues) {
+        ItemStack item = new ItemStack(material);
+
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(name);
+            if (lore != null) meta.setLore(lore);
+            meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            item.setItemMeta(meta);
+        }
+
+        CustomDataItemEditor nbt = CustomDataItemEditor.editItem(item);
+        nbt.setString("uuid", ownerKey);
+        nbt.setString("action", action);
+        for (int i = 0; i + 1 < extraKeyValues.length; i += 2) {
+            nbt.setString(extraKeyValues[i], extraKeyValues[i + 1]);
+        }
+        return nbt.setItemData();
+    }
+
     /** Linea de lore para indicar la pagina. */
     public static String pageLore(int page) {
         return MessageData.menu("menus.lore.page").replace("%PAGE%", String.valueOf(page));
@@ -779,7 +822,7 @@ public class Buttons {
 
         CustomDataItemEditor nbt = CustomDataItemEditor.editItem(item);
 
-        nbt.setString("uuid", uuid.toString());
+        nbt.setString("uuid", playerKey);
         nbt.setString("logType", logType.name());
         nbt.setLong("timestamp", timestamp);
         item = nbt.setItemData();

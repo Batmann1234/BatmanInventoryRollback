@@ -13,7 +13,6 @@ import org.bukkit.inventory.ItemStack;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class MySQL {
 
@@ -45,7 +44,8 @@ public class MySQL {
         dataSource = new HikariDataSource(config);
     }
 
-    private final UUID uuid;
+    /** Nombre del jugador en minusculas (se guarda en la columna `uuid` por compatibilidad). */
+    private final String playerKey;
     private final Long timestamp;
     private final BackupTable backupTable;
 
@@ -82,8 +82,8 @@ public class MySQL {
         }
     }
 
-    public MySQL(UUID uuid, LogType logType, Long timestamp) {
-        this.uuid = uuid;
+    public MySQL(String playerKey, LogType logType, Long timestamp) {
+        this.playerKey = playerKey;
         this.logType = logType;
         this.timestamp = timestamp;
         this.backupTable = getBackupTable();
@@ -111,7 +111,7 @@ public class MySQL {
             LogType logType = logTypeFiles.get(i);
 
             InventoryRollbackPlus.getInstance().getConsoleSender()
-                    .sendMessage("[InventoryRollbackPlus] Converting the backup location " + logType.name());
+                    .sendMessage("[BatmanInventoryRollback] Converting the backup location " + logType.name());
 
             if (backupType == null || !backupType.exists())
                 continue;
@@ -121,12 +121,9 @@ public class MySQL {
                 continue;
 
             for (File UUIDBackup : uuidBackups) {
-                UUID uuid;
-                try {
-                    uuid = UUID.fromString(UUIDBackup.getName());
-                } catch (IllegalArgumentException e) {
+                if (!UUIDBackup.isDirectory())
                     continue;
-                }
+                String uuid = UUIDBackup.getName();
 
                 File[] backups = UUIDBackup.listFiles();
                 if (backups == null)
@@ -171,7 +168,7 @@ public class MySQL {
         }
 
         InventoryRollbackPlus.getInstance().getConsoleSender()
-                .sendMessage("[InventoryRollbackPlus] Conversion completed!");
+                .sendMessage("[BatmanInventoryRollback] Conversion completed!");
     }
 
     private BackupTable getBackupTable() {
@@ -226,12 +223,12 @@ public class MySQL {
             String indexQuery = "CREATE INDEX " + indexName + " ON " + tableName + " (uuid, timestamp)";
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate(indexQuery);
-                InventoryRollbackPlus.getInstance().getConsoleSender().sendMessage("[InventoryRollbackPlus] Created index: " + indexName);
+                InventoryRollbackPlus.getInstance().getConsoleSender().sendMessage("[BatmanInventoryRollback] Created index: " + indexName);
             }
         } catch (SQLException e) {
             if (e.getErrorCode() == 1061) {
                 InventoryRollbackPlus.getInstance().getConsoleSender()
-                        .sendMessage("[InventoryRollbackPlus] Index verified (exists): " + indexName);
+                        .sendMessage("[BatmanInventoryRollback] Index verified (exists): " + indexName);
             } else {
                 InventoryRollbackPlus.getInstance().getLogger()
                         .warning("Could not create index for table " + tableName + ": " + e.getMessage());
@@ -249,11 +246,39 @@ public class MySQL {
         }
     }
 
+    /** Claves de jugador distintas guardadas en una tabla (usado por la migracion UUID -> nombre). */
+    public static List<String> getDistinctPlayerKeys(BackupTable table) throws SQLException {
+        List<String> keys = new ArrayList<>();
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT uuid FROM " + table.getTableName());
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next())
+                keys.add(rs.getString(1));
+        }
+        return keys;
+    }
+
+    /** Cambia la clave de todas las filas de un jugador (usado por la migracion UUID -> nombre). */
+    public static int renamePlayerKey(BackupTable table, String from, String to) throws SQLException {
+        try (Connection conn = getConnection()) {
+            conn.setAutoCommit(false);
+            int updated;
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "UPDATE " + table.getTableName() + " SET uuid = ? WHERE uuid = ?")) {
+                stmt.setString(1, to);
+                stmt.setString(2, from);
+                updated = stmt.executeUpdate();
+            }
+            conn.commit();
+            return updated;
+        }
+    }
+
     public boolean doesBackupTypeExist() throws SQLException {
         try (Connection conn = getConnection()) {
             String query = "SELECT EXISTS(SELECT 1 FROM " + backupTable.getTableName() + " WHERE uuid = ?)";
             try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                stmt.setString(1, uuid.toString());
+                stmt.setString(1, playerKey);
                 try (ResultSet rs = stmt.executeQuery()) {
                     rs.next();
                     return rs.getBoolean(1);
@@ -266,7 +291,7 @@ public class MySQL {
         try (Connection conn = getConnection()) {
             String query = "SELECT COUNT(id) FROM " + backupTable.getTableName() + " WHERE uuid = ?";
             try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                stmt.setString(1, uuid.toString());
+                stmt.setString(1, playerKey);
                 try (ResultSet rs = stmt.executeQuery()) {
                     rs.next();
                     return rs.getInt(1);
@@ -283,7 +308,7 @@ public class MySQL {
             String query = "SELECT timestamp FROM " + backupTable.getTableName() +
                     " WHERE uuid = ? ORDER BY timestamp DESC LIMIT ?, ?";
             try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                stmt.setString(1, uuid.toString());
+                stmt.setString(1, playerKey);
                 stmt.setInt(2, offset);
                 stmt.setInt(3, backups);
                 try (ResultSet rs = stmt.executeQuery()) {
@@ -301,7 +326,7 @@ public class MySQL {
             String delete = "DELETE FROM " + backupTable.getTableName()
                     + " WHERE uuid = ? ORDER BY timestamp ASC LIMIT ?";
             try (PreparedStatement stmt = conn.prepareStatement(delete)) {
-                stmt.setString(1, uuid.toString());
+                stmt.setString(1, playerKey);
                 stmt.setInt(2, deleteAmount);
                 stmt.executeUpdate();
             }
@@ -317,7 +342,7 @@ public class MySQL {
                     +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement stmt = conn.prepareStatement(insert)) {
-                stmt.setString(1, uuid.toString());
+                stmt.setString(1, playerKey);
                 stmt.setLong(2, timestamp);
                 stmt.setFloat(3, xp);
                 stmt.setDouble(4, health);
@@ -343,7 +368,7 @@ public class MySQL {
             String query = "SELECT timestamp,death_reason,location_world,location_x,location_y,location_z FROM " +
                     backupTable.getTableName() + " WHERE uuid = ? AND timestamp = ?";
             try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                stmt.setString(1, uuid.toString());
+                stmt.setString(1, playerKey);
                 stmt.setLong(2, timestamp);
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (rs.next()) {
@@ -362,7 +387,7 @@ public class MySQL {
         try (Connection conn = getConnection()) {
             String query = "SELECT * FROM " + backupTable.getTableName() + " WHERE uuid = ? AND timestamp = ?";
             try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                stmt.setString(1, uuid.toString());
+                stmt.setString(1, playerKey);
                 stmt.setLong(2, timestamp);
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (rs.next()) {

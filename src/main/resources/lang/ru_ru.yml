@@ -1,5 +1,5 @@
 general:
-  prefix: '&f[&bInventoryRollbackPlus&f]&r '
+  prefix: '&f[&bBatmanInventoryRollback&f]&r '
 
 commands:
   no-permission: '&cУ вас нет разрешения!'

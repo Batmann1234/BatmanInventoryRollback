@@ -55,6 +55,23 @@ sounds:
     enabled: true
   xp:
     enabled: true
+  ## Sonidos del menú principal (/ir). Formato: 'nombre.del.sonido;tono'. Déjalo vacío ('') para silenciar un botón.
+  menu:
+    enabled: true
+    volume: 0.8
+    open: 'block.ender_chest.open;1.2'
+    close: 'block.ender_chest.close;1.0'
+    player: 'entity.experience_orb.pickup;1.0'
+    page: 'item.book.page_turn;1.0'
+    info: 'block.note_block.chime;1.4'
+    mode: 'ui.button.click;1.2'
+    self: 'entity.item.pickup;1.1'
+    refresh: 'block.note_block.hat;1.3'
+    save-all: 'entity.player.levelup;1.3'
+    toggle-on: 'block.note_block.pling;1.7'
+    toggle-off: 'block.note_block.bass;0.6'
+    reload: 'block.beacon.activate;1.6'
+    error: 'entity.villager.no;1.0'
     
 ## Define cómo se muestra la hora en los respaldos.
 ## Puedes usar tu zona horaria (EST, PST, GMT, ...) o un desfase UTC (UTC+1, UTC-5, ...).

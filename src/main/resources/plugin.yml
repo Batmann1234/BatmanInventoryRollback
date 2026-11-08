@@ -19,69 +19,69 @@ commands:
     aliases: [bir]
 
 permissions:
-  inventoryrollbackplus.*:
-    description: Gives access to all InventoryRollbackPlus commands.
+  batmaninventoryrollback.*:
+    description: Gives access to all BatmanInventoryRollback commands.
     children:
-      inventoryrollbackplus.cmd: true
-      inventoryrollbackplus.deathsave: true
-      inventoryrollbackplus.joinsave: true
-      inventoryrollbackplus.leavesave: true
-      inventoryrollbackplus.worldchangesave: true
-      inventoryrollbackplus.enable: true
-      inventoryrollbackplus.disable: true
-      inventoryrollbackplus.reload: true
-      inventoryrollbackplus.restore: true
-      inventoryrollbackplus.forcebackup: true
-      inventoryrollbackplus.version: true
-      inventoryrollbackplus.help: true
-      inventoryrollbackplus.adminalerts: true
-      inventoryrollbackplus.viewbackups: true
+      batmaninventoryrollback.cmd: true
+      batmaninventoryrollback.deathsave: true
+      batmaninventoryrollback.joinsave: true
+      batmaninventoryrollback.leavesave: true
+      batmaninventoryrollback.worldchangesave: true
+      batmaninventoryrollback.enable: true
+      batmaninventoryrollback.disable: true
+      batmaninventoryrollback.reload: true
+      batmaninventoryrollback.restore: true
+      batmaninventoryrollback.forcebackup: true
+      batmaninventoryrollback.version: true
+      batmaninventoryrollback.help: true
+      batmaninventoryrollback.adminalerts: true
+      batmaninventoryrollback.viewbackups: true
     default: op
-  inventoryrollbackplus.cmd:
+  batmaninventoryrollback.cmd:
     description: Allows InventoryRollback commands to work.
     default: true
-  inventoryrollbackplus.deathsave:
+  batmaninventoryrollback.deathsave:
     description: Player inventories will be saved when they die.
     default: true
-  inventoryrollbackplus.joinsave:
+  batmaninventoryrollback.joinsave:
     description: Player inventories will be saved when the join.
     default: true
-  inventoryrollbackplus.leavesave:
+  batmaninventoryrollback.leavesave:
     description: Player inventories will be saved when they leave.
     default: true
-  inventoryrollbackplus.worldchangesave:
+  batmaninventoryrollback.worldchangesave:
     description: Player inventories will be saved when they change worlds.
     default: true
-  inventoryrollbackplus.enable:
+  batmaninventoryrollback.enable:
     description: Grants access to enable the plugin globally.
     default: op
-  inventoryrollbackplus.disable:
+  batmaninventoryrollback.disable:
     description: Grants access to disable the plugin globally.
     default: op
-  inventoryrollbackplus.reload:
+  batmaninventoryrollback.reload:
     description: Grants access to reload the plugin configuration.
     default: op
-  inventoryrollbackplus.restore:
+  batmaninventoryrollback.restore:
     description: Grants access to perform player roll backs.
     default: op
     children:
-      inventoryrollbackplus.viewbackups: true
-      inventoryrollbackplus.restore.teleport:
+      batmaninventoryrollback.viewbackups: true
+      batmaninventoryrollback.restore.teleport:
         default: op
         description: Allow the staff member to teleport to the location where the backup was saved
-  inventoryrollbackplus.forcebackup:
+  batmaninventoryrollback.forcebackup:
     description: Forces a backup for an online player.
     default: op
-  inventoryrollbackplus.viewbackups:
+  batmaninventoryrollback.viewbackups:
     description: Allows player to view player backups but can't take items from the backups or restore the target's inventory
     default: op
-  inventoryrollbackplus.adminalerts:
+  batmaninventoryrollback.adminalerts:
     description: Allows player to receive extra notifications related to the plugin when joining.
     default: op
-  inventoryrollbackplus.version:
+  batmaninventoryrollback.version:
     description: Allows player to see the version the plugin is running on the server.
     default: true
-  inventoryrollbackplus.help:
+  batmaninventoryrollback.help:
     description: Get the list of commands and what they do
     default: true
 
@@ -90,54 +90,54 @@ permissions:
     description: Allows InventoryRollback commands to work.
     default: false
     children:
-      inventoryrollbackplus.cmd: true
+      batmaninventoryrollback.cmd: true
   inventoryrollback.deathsave:
     description: Player inventories will be saved when they die.
     default: false
     children:
-      inventoryrollbackplus.deathsave: true
+      batmaninventoryrollback.deathsave: true
   inventoryrollback.joinsave:
     description: Player inventories will be saved when the join.
     default: false
     children:
-      inventoryrollbackplus.joinsave: true
+      batmaninventoryrollback.joinsave: true
   inventoryrollback.leavesave:
     description: Player inventories will be saved when they leave.
     default: false
     children:
-      inventoryrollbackplus.leavesave: true
+      batmaninventoryrollback.leavesave: true
   inventoryrollback.worldchangesave:
     description: Player inventories will be saved when they change worlds.
     default: false
     children:
-      inventoryrollbackplus.worldchangesave: true
+      batmaninventoryrollback.worldchangesave: true
   inventoryrollback.enable:
     description: Grants access to enable the plugin globally.
     default: false
     children:
-      inventoryrollbackplus.enable: true
+      batmaninventoryrollback.enable: true
   inventoryrollback.disable:
     description: Grants access to disable the plugin globally.
     default: false
     children:
-      inventoryrollbackplus.disable: true
+      batmaninventoryrollback.disable: true
   inventoryrollback.reload:
     description: Grants access to reload the plugin configuration.
     default: false
     children:
-      inventoryrollbackplus.reload: true
+      batmaninventoryrollback.reload: true
   inventoryrollback.restore:
     description: Grants access to perform player roll backs.
     default: false
     children:
-      inventoryrollbackplus.restore: true
+      batmaninventoryrollback.restore: true
   inventoryrollback.forcebackup:
     description: Forces a backup for an online player.
     default: false
     children:
-      inventoryrollbackplus.forcebackup: true
+      batmaninventoryrollback.forcebackup: true
   inventoryrollback.version:
     description: Allows player to see the version the plugin is running on the server.
     default: false
     children:
-      inventoryrollbackplus.version: true
+      batmaninventoryrollback.version: true

@@ -2,10 +2,10 @@ package me.danjono.inventoryrollback.gui.menu;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import com.nuclyon.technicallycoded.inventoryrollback.util.PlayerKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -23,7 +23,7 @@ public class RollbackListMenu {
     private int pageNumber;
 
     private Player staff;
-    private UUID playerUUID;
+    private String playerKey;
     private LogType logType;
     
     private Buttons buttons;
@@ -31,10 +31,10 @@ public class RollbackListMenu {
 
     public RollbackListMenu(Player staff, OfflinePlayer player, LogType logType, int pageNumberIn) {
         this.staff = staff;
-        this.playerUUID = player.getUniqueId();
+        this.playerKey = PlayerKey.of(player);
         this.logType = logType;
         this.pageNumber = pageNumberIn;
-        this.buttons = new Buttons(playerUUID);
+        this.buttons = new Buttons(playerKey);
         
         createInventory();
     }
@@ -65,7 +65,7 @@ public class RollbackListMenu {
     }
 
     public void showBackups() {
-        PlayerData playerData = new PlayerData(playerUUID, logType, null);
+        PlayerData playerData = new PlayerData(playerKey, logType, null);
 
         //Check how many backups there are in total
         int backups = playerData.getAmountOfBackups();
@@ -91,7 +91,7 @@ public class RollbackListMenu {
         for (int i = 0; i < backupsOnCurrentPage; i++) {
             try {
                 Long timestamp = timeStamps.get(i);
-                playerData = new PlayerData(playerUUID, logType, timestamp);
+                playerData = new PlayerData(playerKey, logType, timestamp);
 
                 playerData.getRollbackMenuData();
 
@@ -116,7 +116,7 @@ public class RollbackListMenu {
 
                 // Ping que tenia el jugador al morir
                 if (logType == LogType.DEATH) {
-                    Integer ping = PingStore.get(playerUUID, timestamp);
+                    Integer ping = PingStore.get(playerKey, timestamp);
                     if (ping != null && ping >= 0) {
                         lore.add(MessageData.menu("menus.ping.list-line").replace("%PING%", String.valueOf(ping)));
                     } else {

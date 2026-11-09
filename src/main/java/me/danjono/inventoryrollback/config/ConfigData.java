@@ -90,6 +90,10 @@ public class ConfigData {
 
     private static boolean allowOtherPluginEditDeathInventory;
     private static boolean restoreToPlayerButton;
+    private static boolean restoreConfirmation = true;
+    private static boolean deathContextEnabled = true;
+    private static String deathContextPetPlaceholder = "";
+    private static String deathContextClanPlaceholder = "%uclans_tag_color%";
     private static int backupLinesVisible;
 
     private static boolean saveEmptyInventories;
@@ -148,6 +152,10 @@ public class ConfigData {
 
         setAllowOtherPluginEditDeathInventory((boolean) getDefaultValue("allow-other-plugins-edit-death-inventory", false));
         setRestoreToPlayerButton((boolean) getDefaultValue("restore-to-player-button", true));
+        restoreConfirmation = (boolean) getDefaultValue("restore-confirmation", true);
+        deathContextEnabled = (boolean) getDefaultValue("death-context.enabled", true);
+        deathContextPetPlaceholder = String.valueOf(getDefaultValue("death-context.pet-placeholder", ""));
+        deathContextClanPlaceholder = String.valueOf(getDefaultValue("death-context.clan-placeholder", "%uclans_tag_color%"));
         setBackupLinesVisible((int) getDefaultValue("backup-lines-visible", 1));
         setSaveEmptyInventories((boolean) getDefaultValue("save-empty-inventories", true));
 
@@ -405,6 +413,22 @@ public class ConfigData {
 
     public static int getMySQLPrepStmtCacheSqlLimit() {
         return mysqlPrepStmtCacheSqlLimit;
+    }
+
+    public static boolean isRestoreConfirmation() {
+        return restoreConfirmation;
+    }
+
+    public static boolean isDeathContextEnabled() {
+        return deathContextEnabled;
+    }
+
+    public static String getDeathContextPetPlaceholder() {
+        return deathContextPetPlaceholder;
+    }
+
+    public static String getDeathContextClanPlaceholder() {
+        return deathContextClanPlaceholder;
     }
 
     public static boolean isRestoreToPlayerButton() {

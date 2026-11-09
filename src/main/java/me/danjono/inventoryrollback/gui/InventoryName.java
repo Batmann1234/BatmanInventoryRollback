@@ -10,7 +10,8 @@ public enum InventoryName {
     PLAYER_MENU("menus.titles.player-menu", 9),
     ROLLBACK_LIST("menus.titles.rollback-list", ConfigData.getBackupLinesVisible() * 9 + 9),
     MAIN_BACKUP("menus.titles.main-backup", 54),
-    ENDER_CHEST_BACKUP("menus.titles.ender-chest-backup", 36);
+    ENDER_CHEST_BACKUP("menus.titles.ender-chest-backup", 36),
+    RECENT_DEATHS("menus.titles.recent-deaths", 54);
 
     private final String messageKey;
     private final int size;

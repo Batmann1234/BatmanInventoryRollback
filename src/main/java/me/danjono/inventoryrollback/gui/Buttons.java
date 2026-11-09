@@ -17,6 +17,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 
+import com.nuclyon.technicallycoded.inventoryrollback.util.DeathContext;
 import com.nuclyon.technicallycoded.inventoryrollback.util.PlayerKey;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -706,11 +707,28 @@ public class Buttons {
 
     /** Boton informativo con el ping que tenia el jugador al morir. */
     public ItemStack pingButton(Integer ping) {
+        return pingButton(ping, null);
+    }
+
+    /** Lineas de lore con la montura, la mascota y el clan que tenia el jugador al morir. */
+    public static List<String> contextLore(DeathContext context) {
+        List<String> lore = new ArrayList<>();
+        if (context == null) return lore;
+        if (context.vehicle != null) lore.add(MessageData.menu("menus.context.vehicle").replace("%VALUE%", context.vehicle));
+        if (context.pet != null) lore.add(MessageData.menu("menus.context.pet").replace("%VALUE%", context.pet));
+        if (context.clan != null) lore.add(MessageData.menu("menus.context.clan").replace("%VALUE%", context.clan));
+        return lore;
+    }
+
+    /** Boton informativo de la muerte: ping al morir y, si existen, montura, mascota y clan. */
+    public ItemStack pingButton(Integer ping, DeathContext context) {
         ItemStack item = new ItemStack(getPingIcon());
 
         ItemMeta meta = item.getItemMeta();
         assert meta != null;
-        meta.setDisplayName(MessageData.menu("menus.ping.button-name"));
+
+        boolean hasContext = context != null && !context.isEmpty();
+        meta.setDisplayName(MessageData.menu(hasContext ? "menus.context.button-name" : "menus.ping.button-name"));
 
         List<String> lore = new ArrayList<>();
         if (ping != null && ping >= 0) {
@@ -718,6 +736,7 @@ public class Buttons {
         } else {
             lore.add(MessageData.menu("menus.ping.button-lore-unknown"));
         }
+        lore.addAll(contextLore(context));
         meta.setLore(lore);
 
         item.setItemMeta(meta);

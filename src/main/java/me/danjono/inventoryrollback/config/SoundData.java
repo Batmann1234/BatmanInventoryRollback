@@ -46,6 +46,7 @@ public class SoundData extends ConfigData {
 		{"toggle-on", "block.note_block.pling;1.7"},
 		{"toggle-off", "block.note_block.bass;0.6"},
 		{"reload", "block.beacon.activate;1.6"},
+		{"confirm", "block.note_block.bit;1.2"},
 		{"error", "entity.villager.no;1.0"}
 	};
 

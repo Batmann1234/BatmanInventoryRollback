@@ -2,6 +2,7 @@ package me.danjono.inventoryrollback.listeners;
 
 import com.nuclyon.technicallycoded.inventoryrollback.InventoryRollbackPlus;
 import com.nuclyon.technicallycoded.inventoryrollback.customdata.CustomDataItemEditor;
+import com.nuclyon.technicallycoded.inventoryrollback.util.Perms;
 import com.tcoded.lightlibs.bukkitversion.BukkitVersion;
 import com.tcoded.lightlibs.bukkitversion.MCVersion;
 import io.papermc.lib.PaperLib;
@@ -31,7 +32,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -55,7 +59,8 @@ public class ClickGUI implements Listener {
                 && !InventoryName.PLAYER_MENU.is(title) 
                 && !InventoryName.ROLLBACK_LIST.is(title)
                 && !InventoryName.MAIN_BACKUP.is(title)
-                && !InventoryName.ENDER_CHEST_BACKUP.is(title))
+                && !InventoryName.ENDER_CHEST_BACKUP.is(title)
+                && !InventoryName.RECENT_DEATHS.is(title))
             return;
 
         e.setCancelled(true);
@@ -84,7 +89,8 @@ public class ClickGUI implements Listener {
                 && !InventoryName.PLAYER_MENU.is(title) 
                 && !InventoryName.ROLLBACK_LIST.is(title)
                 && !InventoryName.MAIN_BACKUP.is(title)
-                && !InventoryName.ENDER_CHEST_BACKUP.is(title))
+                && !InventoryName.ENDER_CHEST_BACKUP.is(title)
+                && !InventoryName.RECENT_DEATHS.is(title))
             return;
 
         //Check if inventory is a virtual one and not one that has the same name on a player chest
@@ -122,8 +128,149 @@ public class ClickGUI implements Listener {
             enderChestBackupMenu(e,staff, icon);
         }
 
+        //Listener for recent deaths menu
+        else if (InventoryName.RECENT_DEATHS.is(title)) {
+            recentDeathsMenu(e,staff, icon);
+        }
+
         else {
             e.setCancelled(true);
+        }
+    }
+
+    // ---------------------------------------------------------------- ayudas
+
+    private static final int CONFIRM_SECONDS = 8;
+
+    private static final class Pending {
+        final String token;
+        final long expires;
+
+        Pending(String token, long expires) {
+            this.token = token;
+            this.expires = expires;
+        }
+    }
+
+    private final Map<UUID, Pending> pendingConfirm = new HashMap<>();
+
+    /** @return true si NO puede usar el permiso (avisa con el mensaje que corresponda y suena el error). */
+    private boolean denied(Player staff, String permission) {
+        if (Perms.can(staff, permission)) return false;
+
+        SoundData.playMenu(staff, "error");
+        String message = (staff.hasPermission(permission) && Perms.isViewOnly(staff))
+                ? MessageData.menu("menus.main.readonly-denied")
+                : MessageData.getNoPermission();
+        staff.sendMessage(MessageData.getPluginPrefix() + message);
+        return true;
+    }
+
+    /**
+     * Pide un segundo clic antes de sobrescribir.
+     * @return true si el clic ya esta confirmado y se puede ejecutar la accion.
+     */
+    private boolean confirmed(InventoryClickEvent e, Player staff, String token) {
+        if (!ConfigData.isRestoreConfirmation()) return true;
+
+        long now = System.currentTimeMillis();
+        Pending pending = pendingConfirm.get(staff.getUniqueId());
+        if (pending != null && pending.token.equals(token) && pending.expires > now) {
+            pendingConfirm.remove(staff.getUniqueId());
+            return true;
+        }
+
+        pendingConfirm.put(staff.getUniqueId(), new Pending(token, now + CONFIRM_SECONDS * 1000L));
+
+        // El boton cambia para que se vea que falta confirmar
+        ItemStack clicked = e.getCurrentItem();
+        if (clicked != null) {
+            ItemMeta meta = clicked.getItemMeta();
+            if (meta != null) {
+                meta.setDisplayName(MessageData.menu("menus.main.confirm-name"));
+                meta.setLore(Buttons.splitLines(MessageData.menu("menus.main.confirm-lore")));
+                clicked.setItemMeta(meta);
+                e.getInventory().setItem(e.getRawSlot(), clicked);
+            }
+        }
+
+        SoundData.playMenu(staff, "confirm");
+        staff.sendMessage(MessageData.getPluginPrefix()
+                + MessageData.menu("menus.main.confirm-chat").replace("%SECONDS%", String.valueOf(CONFIRM_SECONDS)));
+        return false;
+    }
+
+    private void openRecentDeaths(Player staff, int page) {
+        RecentDeathsMenu menu = new RecentDeathsMenu(staff, page);
+
+        staff.openInventory(menu.getInventory());
+        Bukkit.getScheduler().runTaskAsynchronously(InventoryRollback.getInstance(), menu::showDeaths);
+    }
+
+    /** Abre el respaldo de un jugador (los datos se leen de forma asincrona para no dar lag). */
+    private void openBackupMenu(Player staff, String playerKey, Long timestamp, LogType logType, String location) {
+        // Run all data retrieval operations async to avoid tick lag
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        // Init from MySQL or, if YAML, init & load config file
+                        PlayerData data = new PlayerData(playerKey, logType, timestamp);
+
+                        // Get from MySQL
+                        if (ConfigData.getSaveType() == ConfigData.SaveType.MYSQL) {
+                            try {
+                                data.getAllBackupData().get();
+                            } catch (ExecutionException | InterruptedException ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+
+                        // Create inventory
+                        MainInventoryBackupMenu menu = new MainInventoryBackupMenu(staff, data, location);
+
+                        // Display inventory to player
+                        Future<InventoryView> inventoryViewFuture =
+                                main.getServer().getScheduler().callSyncMethod(main,
+                                        () -> staff.openInventory(menu.getInventory()));
+                        //If the backup file is invalid it will return null, we want to catch it here
+                        try {
+                            inventoryViewFuture.get();
+                            // Start placing items in the inventory async
+                            menu.showBackupItems();
+                        } catch (NullPointerException | ExecutionException | InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }.runTaskAsynchronously(main);
+    }
+
+    private void recentDeathsMenu(InventoryClickEvent e, Player staff, ItemStack icon) {
+        if (e.getRawSlot() >= 0 && e.getRawSlot() < InventoryName.RECENT_DEATHS.getSize()) {
+            if (icon == null)
+                return;
+
+            CustomDataItemEditor nbt = CustomDataItemEditor.editItem(icon);
+            if (!nbt.hasUUID())
+                return;
+
+            String action = nbt.getString("action");
+            String logType = nbt.getString("logType");
+
+            if ("back".equals(action)) {
+                SoundData.playMenu(staff, "mode");
+                openMainMenu(staff, 1, false, true);
+            } else if (icon.getType().equals(Buttons.getPageSelectorIcon())) {
+                SoundData.playMenu(staff, "page");
+                openRecentDeaths(staff, nbt.getInt("page"));
+            } else if (logType != null && !logType.isEmpty()) {
+                SoundData.playMenu(staff, "player");
+                openBackupMenu(staff, nbt.getString("uuid"), nbt.getLong("timestamp"),
+                        LogType.valueOf(logType), nbt.getString("location"));
+            }
+        } else {
+            if (e.getRawSlot() >= e.getInventory().getSize() && !e.isShiftClick()) {
+                e.setCancelled(false);
+            }
         }
     }
 
@@ -162,17 +309,18 @@ public class ClickGUI implements Listener {
                         Bukkit.getScheduler().runTaskAsynchronously(InventoryRollback.getInstance(), selfMenu::getPlayerMenu);
                         break;
 
+                    case "recent":
+                        SoundData.playMenu(staff, "mode");
+                        openRecentDeaths(staff, 1);
+                        break;
+
                     case "refresh":
                         SoundData.playMenu(staff, "refresh");
                         openMainMenu(staff, page, offline, true);
                         break;
 
                     case "saveall": {
-                        if (!staff.hasPermission("batmaninventoryrollback.forcebackup")) {
-                            SoundData.playMenu(staff, "error");
-                            staff.sendMessage(MessageData.getPluginPrefix() + MessageData.getNoPermission());
-                            break;
-                        }
+                        if (denied(staff, "batmaninventoryrollback.forcebackup")) break;
 
                         int saved = 0;
                         for (Player online : Bukkit.getOnlinePlayers()) {
@@ -191,11 +339,7 @@ public class ClickGUI implements Listener {
                     case "toggle": {
                         boolean enabled = ConfigData.isEnabled();
                         String permission = enabled ? "batmaninventoryrollback.disable" : "batmaninventoryrollback.enable";
-                        if (!staff.hasPermission(permission)) {
-                            SoundData.playMenu(staff, "error");
-                            staff.sendMessage(MessageData.getPluginPrefix() + MessageData.getNoPermission());
-                            break;
-                        }
+                        if (denied(staff, permission)) break;
 
                         this.main.getConfigData().persistEnabled(!enabled);
 
@@ -207,11 +351,7 @@ public class ClickGUI implements Listener {
                     }
 
                     case "reload": {
-                        if (!staff.hasPermission("batmaninventoryrollback.reload")) {
-                            SoundData.playMenu(staff, "error");
-                            staff.sendMessage(MessageData.getPluginPrefix() + MessageData.getNoPermission());
-                            break;
-                        }
+                        if (denied(staff, "batmaninventoryrollback.reload")) break;
 
                         ConfigData config = this.main.getConfigData();
                         config.generateConfigFile();
@@ -307,39 +447,7 @@ public class ClickGUI implements Listener {
                 LogType logType = LogType.valueOf(nbt.getString("logType"));
                 String location = nbt.getString("location");
 
-                // Run all data retrieval operations async to avoid tick lag
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        // Init from MySQL or, if YAML, init & load config file
-                        PlayerData data = new PlayerData(playerKey, logType, timestamp);
-
-                        // Get from MySQL
-                        if (ConfigData.getSaveType() == ConfigData.SaveType.MYSQL) {
-                            try {
-                                data.getAllBackupData().get();
-                            } catch (ExecutionException | InterruptedException ex) {
-                                ex.printStackTrace();
-                            }
-                        }
-
-                        // Create inventory
-                        MainInventoryBackupMenu menu = new MainInventoryBackupMenu(staff, data, location);
-
-                        // Display inventory to player
-                        Future<InventoryView> inventoryViewFuture =
-                                main.getServer().getScheduler().callSyncMethod(main,
-                                        () -> staff.openInventory(menu.getInventory()));
-                        //If the backup file is invalid it will return null, we want to catch it here
-                        try {
-                            inventoryViewFuture.get();
-                            // Start placing items in the inventory async
-                            menu.showBackupItems();
-                        } catch (NullPointerException | ExecutionException | InterruptedException ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                }.runTaskAsynchronously(main);
+                openBackupMenu(staff, playerKey, timestamp, logType, location);
             } 
 
             //Player has selected a page icon
@@ -392,10 +500,7 @@ public class ClickGUI implements Listener {
             //Click on page selector button to go back to rollback menu
             else if (e.getRawSlot() == MainInventoryBackupMenu.GIVE_SHULKERS_BUTTON_SLOT) {
                 // Perm check
-                if (!staff.hasPermission("batmaninventoryrollback.restore")) {
-                    staff.sendMessage(MessageData.getPluginPrefix() + MessageData.getNoPermission());
-                    return;
-                }
+                if (denied(staff, "batmaninventoryrollback.restore")) return;
 
                 Bukkit.getScheduler().runTaskAsynchronously(InventoryRollback.getInstance(), () -> {
                     // Unsupported on older versions
@@ -478,13 +583,11 @@ public class ClickGUI implements Listener {
             //Clicked icon to overwrite player inventory with backup data
             else if (icon.getType().equals(Buttons.getRestoreAllInventoryIcon())) {
                 // Perm check
-                if (!staff.hasPermission("batmaninventoryrollback.restore")) {
-                    staff.sendMessage(MessageData.getPluginPrefix() + MessageData.getNoPermission());
-                    return;
-                }
+                if (denied(staff, "batmaninventoryrollback.restore")) return;
 
                 if (offlinePlayer.isOnline()) {
                     Player player = (Player) offlinePlayer;
+                    if (!confirmed(e, staff, "inv:" + offlinePlayer.getName() + ":" + timestamp)) return;
 
                     new BukkitRunnable() {
                         @Override
@@ -543,10 +646,7 @@ public class ClickGUI implements Listener {
             // Clicked icon to teleport player to backup coordinates
             else if (icon.getType().equals(Buttons.getTeleportLocationIcon())) {
                 // Perm check
-                if (!staff.hasPermission("batmaninventoryrollback.restore.teleport")) {
-                    staff.sendMessage(MessageData.getPluginPrefix() + MessageData.getNoPermission());
-                    return;
-                }
+                if (denied(staff, "batmaninventoryrollback.restore.teleport")) return;
 
                 String[] location = nbt.getString("location").split(",");			
                 World world = Bukkit.getWorld(location[0]);
@@ -617,10 +717,7 @@ public class ClickGUI implements Listener {
             // Clicked icon to restore backup players health
             else if (icon.getType().equals(Buttons.getHealthIcon())) {
                 // Perm check
-                if (!staff.hasPermission("batmaninventoryrollback.restore")) {
-                    staff.sendMessage(MessageData.getPluginPrefix() + MessageData.getNoPermission());
-                    return;
-                }
+                if (denied(staff, "batmaninventoryrollback.restore")) return;
 
                 if (offlinePlayer.isOnline()) {
                     Player player = (Player) offlinePlayer;	
@@ -642,10 +739,7 @@ public class ClickGUI implements Listener {
             //Clicked icon to restore backup players hunger
             else if (icon.getType().equals(Buttons.getHungerIcon())) {
                 // Perm check
-                if (!staff.hasPermission("batmaninventoryrollback.restore")) {
-                    staff.sendMessage(MessageData.getPluginPrefix() + MessageData.getNoPermission());
-                    return;
-                }
+                if (denied(staff, "batmaninventoryrollback.restore")) return;
 
                 if (offlinePlayer.isOnline()) {
                     Player player = (Player) offlinePlayer;	
@@ -669,10 +763,7 @@ public class ClickGUI implements Listener {
             //Clicked icon to restore backup players experience
             else if (icon.getType().equals(Buttons.getExperienceIcon())) {
                 // Perm check
-                if (!staff.hasPermission("batmaninventoryrollback.restore")) {
-                    staff.sendMessage(MessageData.getPluginPrefix() + MessageData.getNoPermission());
-                    return;
-                }
+                if (denied(staff, "batmaninventoryrollback.restore")) return;
 
                 if (offlinePlayer.isOnline()) {				
                     Player player = (Player) offlinePlayer;	
@@ -707,10 +798,8 @@ public class ClickGUI implements Listener {
             if (clickIsWithinPlayerInventory && !e.isShiftClick()) {
                 e.setCancelled(false);
             } else if (isValidBackupMenuInteraction) {
-                if (staff.hasPermission("batmaninventoryrollback.restore")) {
+                if (!denied(staff, "batmaninventoryrollback.restore")) {
                     e.setCancelled(false);
-                } else {
-                    staff.sendMessage(MessageData.getPluginPrefix() + MessageData.getNoPermission());
                 }
             }
         }
@@ -816,10 +905,7 @@ public class ClickGUI implements Listener {
             //Click on page selector button to go back to rollback menu
             else if (e.getRawSlot() == EnderChestBackupMenu.GIVE_SHULKERS_BUTTON_SLOT) {
                 // Perm check
-                if (!staff.hasPermission("batmaninventoryrollback.restore")) {
-                    staff.sendMessage(MessageData.getPluginPrefix() + MessageData.getNoPermission());
-                    return;
-                }
+                if (denied(staff, "batmaninventoryrollback.restore")) return;
 
                 Bukkit.getScheduler().runTaskAsynchronously(InventoryRollback.getInstance(), () -> {
                     // Unsupported on older versions
@@ -887,13 +973,11 @@ public class ClickGUI implements Listener {
             //Clicked icon to overwrite player ender chest with backup data
             else if (icon.getType().equals(Buttons.getRestoreAllInventoryIcon())) {
                 // Perm check
-                if (!staff.hasPermission("batmaninventoryrollback.restore")) {
-                    staff.sendMessage(MessageData.getPluginPrefix() + MessageData.getNoPermission());
-                    return;
-                }
+                if (denied(staff, "batmaninventoryrollback.restore")) return;
 
                 if (offlinePlayer.isOnline()) {
                     Player player = (Player) offlinePlayer;
+                    if (!confirmed(e, staff, "ender:" + offlinePlayer.getName() + ":" + timestamp)) return;
 
                     // Run all data retrieval operations async to avoid tick lag
                     new BukkitRunnable() {
@@ -948,10 +1032,7 @@ public class ClickGUI implements Listener {
                 e.setCancelled(false);
             } else if (slotIndex < topInvSize - 9) {
                 // Perm check
-                if (!staff.hasPermission("batmaninventoryrollback.restore")) {
-                    staff.sendMessage(MessageData.getPluginPrefix() + MessageData.getNoPermission());
-                    return;
-                }
+                if (denied(staff, "batmaninventoryrollback.restore")) return;
                 e.setCancelled(false);
             }
         }

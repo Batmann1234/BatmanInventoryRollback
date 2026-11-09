@@ -71,9 +71,20 @@ public class SaveInventory {
         // Ping del jugador en este momento (solo se guarda en muertes)
         final int pingAtSave = logType == LogType.DEATH ? PingUtil.getPing(player) : -1;
 
+        // Contexto de la muerte (montura, mascota, clan): se lee aqui porque necesita el hilo principal
+        final com.nuclyon.technicallycoded.inventoryrollback.util.DeathContext deathContext =
+                logType == LogType.DEATH ? com.nuclyon.technicallycoded.inventoryrollback.util.DeathContext.capture(player) : null;
+        final String playerNameAtSave = player.getName();
+
         boolean saveAsync = !InventoryRollbackPlus.getInstance().isShuttingDown() && async;
         Runnable saveTask = () -> {
             if (pingAtSave >= 0) PingStore.set(com.nuclyon.technicallycoded.inventoryrollback.util.PlayerKey.of(player), timestamp, pingAtSave);
+
+            if (logType == LogType.DEATH) {
+                String deathKey = com.nuclyon.technicallycoded.inventoryrollback.util.PlayerKey.of(playerNameAtSave);
+                com.nuclyon.technicallycoded.inventoryrollback.util.DeathExtrasStore.set(deathKey, timestamp, deathContext);
+                com.nuclyon.technicallycoded.inventoryrollback.util.RecentDeathsStore.add(playerNameAtSave, timestamp);
+            }
 
             PlayerData data = new PlayerData(player, logType, timestamp);
 

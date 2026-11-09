@@ -71,6 +71,7 @@ sounds:
     toggle-on: 'block.note_block.pling;1.7'
     toggle-off: 'block.note_block.bass;0.6'
     reload: 'block.beacon.activate;1.6'
+    confirm: 'block.note_block.bit;1.2'
     error: 'entity.villager.no;1.0'
     
 ## Define cómo se muestra la hora en los respaldos.
@@ -92,6 +93,17 @@ allow-other-plugins-edit-death-inventory: false
 ## Al activar esta opción se muestra un botón para restaurar por completo el respaldo de un jugador conectado.
 ## Esto sobrescribe por completo su inventario actual y borra lo que tenga sin hacer un respaldo antes.
 restore-to-player-button: true
+
+## Pide un segundo clic para confirmar antes de SOBRESCRIBIR el inventario o el cofre de ender de un jugador.
+restore-confirmation: true
+
+## Contexto que se guarda al morir. Se muestra en el botón de ping, en la lista de respaldos y en el menú de muertes recientes.
+## La montura (entidad en la que iba el jugador) se guarda siempre. La mascota y el clan se leen con placeholders de PlaceholderAPI.
+## Déjalos vacíos ('') para desactivarlos.
+death-context:
+  enabled: true
+  pet-placeholder: ''
+  clan-placeholder: '%uclans_tag_color%'
 
 ## Cámbialo a 'false' para no guardar si el inventario del jugador está vacío
 save-empty-inventories: true

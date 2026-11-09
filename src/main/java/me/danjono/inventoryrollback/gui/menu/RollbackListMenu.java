@@ -122,6 +122,9 @@ public class RollbackListMenu {
                     } else {
                         lore.add(MessageData.menu("menus.ping.list-line-unknown"));
                     }
+
+                    lore.addAll(Buttons.contextLore(
+                            com.nuclyon.technicallycoded.inventoryrollback.util.DeathExtrasStore.get(playerKey, timestamp)));
                 }
 
                 ItemStack item = buttons.createInventoryButton(new ItemStack(Material.CHEST), logType, location, timestamp, displayName, lore);

@@ -14,7 +14,9 @@ import org.bukkit.inventory.ItemStack;
 
 import com.nuclyon.technicallycoded.inventoryrollback.customdata.CustomDataItemEditor;
 import com.nuclyon.technicallycoded.inventoryrollback.util.PingUtil;
+import com.nuclyon.technicallycoded.inventoryrollback.util.Perms;
 import com.nuclyon.technicallycoded.inventoryrollback.util.PlayerKey;
+import com.nuclyon.technicallycoded.inventoryrollback.util.RecentDeathsStore;
 
 import me.danjono.inventoryrollback.InventoryRollback;
 import me.danjono.inventoryrollback.config.ConfigData;
@@ -45,6 +47,7 @@ public class MainMenu {
     // Botones
     public static final int SLOT_MODE = 2;
     public static final int SLOT_INFO = 4;
+    public static final int SLOT_RECENT = 5;
     public static final int SLOT_SELF = 6;
     public static final int SLOT_PREVIOUS = 45;
     public static final int SLOT_SAVE_ALL = 47;
@@ -127,6 +130,7 @@ public class MainMenu {
 
         // ---- Fila superior
         inventory.setItem(SLOT_MODE, modeButton());
+        inventory.setItem(SLOT_RECENT, recentButton());
         inventory.setItem(SLOT_SELF, selfButton());
 
         // ---- Fila inferior
@@ -198,6 +202,7 @@ public class MainMenu {
         lore.add(MessageData.menu("menus.main.info-online").replace("%VALUE%", String.valueOf(Bukkit.getOnlinePlayers().size())));
         lore.add(MessageData.menu("menus.main.info-registered").replace("%VALUE%", String.valueOf(Bukkit.getOfflinePlayers().length)));
         lore.add(MessageData.menu("menus.main.info-version").replace("%VALUE%", String.valueOf(InventoryRollback.getPluginVersion())));
+        if (Perms.isViewOnly(staff)) lore.add(MessageData.menu("menus.main.readonly-info"));
         lore.add("");
         lore.add(MessageData.menu("menus.main.info-showing").replace("%VALUE%",
                 MessageData.menu(offlineMode ? "menus.main.showing-offline" : "menus.main.showing-online")));
@@ -216,6 +221,14 @@ public class MainMenu {
 
         // El valor "mode" es la lista a la que se cambia al hacer clic
         return Buttons.actionButton(icon, name, lore, "mode", staffKey, "mode", offlineMode ? "ONLINE" : "OFFLINE");
+    }
+
+    private ItemStack recentButton() {
+        List<String> lore = new ArrayList<>(Buttons.splitLines(MessageData.menu("menus.main.recent-lore")));
+        lore.add("");
+        lore.add(MessageData.menu("menus.main.recent-count").replace("%VALUE%", String.valueOf(RecentDeathsStore.list().size())));
+        lore.add(MessageData.menu("menus.main.recent-click"));
+        return Buttons.actionButton(Buttons.icon("SKELETON_SKULL", "BONE"), MessageData.menu("menus.main.recent-name"), lore, "recent", staffKey);
     }
 
     private ItemStack selfButton() {
@@ -237,7 +250,7 @@ public class MainMenu {
         List<String> lore = new ArrayList<>();
         lore.add(MessageData.menu("menus.main.saveall-lore").replace("%VALUE%", String.valueOf(Bukkit.getOnlinePlayers().size())));
         lore.add("");
-        lore.add(staff.hasPermission("batmaninventoryrollback.forcebackup")
+        lore.add(Perms.can(staff, "batmaninventoryrollback.forcebackup")
                 ? MessageData.menu("menus.main.saveall-click")
                 : MessageData.menu("menus.main.no-permission-lore"));
         return Buttons.actionButton(Buttons.icon("EMERALD_BLOCK", "EMERALD"), MessageData.menu("menus.main.saveall-name"), lore, "saveall", staffKey,
@@ -250,7 +263,7 @@ public class MainMenu {
 
         List<String> lore = new ArrayList<>(Buttons.splitLines(MessageData.menu(enabled ? "menus.main.toggle-on-lore" : "menus.main.toggle-off-lore")));
         lore.add("");
-        lore.add(staff.hasPermission(perm)
+        lore.add(Perms.can(staff, perm)
                 ? MessageData.menu(enabled ? "menus.main.toggle-on-click" : "menus.main.toggle-off-click")
                 : MessageData.menu("menus.main.no-permission-lore"));
 
@@ -262,7 +275,7 @@ public class MainMenu {
     private ItemStack reloadButton() {
         List<String> lore = new ArrayList<>(Buttons.splitLines(MessageData.menu("menus.main.reload-lore")));
         lore.add("");
-        lore.add(staff.hasPermission("batmaninventoryrollback.reload")
+        lore.add(Perms.can(staff, "batmaninventoryrollback.reload")
                 ? MessageData.menu("menus.main.reload-click")
                 : MessageData.menu("menus.main.no-permission-lore"));
         return Buttons.actionButton(Buttons.icon("COMPARATOR", "REDSTONE_COMPARATOR"), MessageData.menu("menus.main.reload-name"), lore, "reload", staffKey,

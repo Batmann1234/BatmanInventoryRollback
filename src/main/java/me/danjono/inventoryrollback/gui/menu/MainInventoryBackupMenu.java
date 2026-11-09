@@ -91,7 +91,8 @@ public class MainInventoryBackupMenu {
 
 		//Add death ping button (solo en muertes)
 		if (logType == LogType.DEATH)
-			inventory.setItem(46, buttons.pingButton(PingStore.get(playerKey, timestamp)));
+			inventory.setItem(46, buttons.pingButton(PingStore.get(playerKey, timestamp),
+					com.nuclyon.technicallycoded.inventoryrollback.util.DeathExtrasStore.get(playerKey, timestamp)));
 
 		//Add health icon
 		inventory.setItem(51, buttons.healthButton(logType, health));

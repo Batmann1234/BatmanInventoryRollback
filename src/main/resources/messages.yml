@@ -86,6 +86,7 @@ menus:
     rollback-list: '<#2ECC71>&lINVENTARIO <#FFFFFF>&l» <#2ECC71>&lRespaldos'
     main-backup: '<#2ECC71>&lINVENTARIO <#FFFFFF>&l» <#2ECC71>&lRespaldo de inventario'
     ender-chest-backup: '<#2ECC71>&lINVENTARIO <#FFFFFF>&l» <#2ECC71>&lRespaldo de cofre'
+    recent-deaths: '<#2ECC71>&lINVENTARIO <#FFFFFF>&l» <#2ECC71>&lMuertes recientes'
   log-buttons:
     deaths: '<#2ECC71>&lMuertes'
     joins: '<#2ECC71>&lEntradas'
@@ -170,3 +171,24 @@ menus:
     head-click: '<#FFFFFF>» <#2ECC71>Clic para ver sus respaldos'
     empty-online: '<#FFFFFF>No hay jugadores conectados.'
     empty-offline: '<#FFFFFF>Aún no hay jugadores registrados.'
+    recent-name: '<#2ECC71>&l☠ Muertes recientes'
+    recent-lore: '<#FFFFFF>Las últimas muertes del servidor, de todos\n<#FFFFFF>los jugadores. Abre el respaldo con un clic.'
+    recent-count: '<#2ECC71>Registradas: <#FFFFFF>%VALUE%'
+    recent-click: '<#FFFFFF>» <#2ECC71>Clic para ver la lista'
+    confirm-name: '<#FF5555>&l¿SOBRESCRIBIR? <#FFFFFF>Clic otra vez'
+    confirm-lore: '<#FFFFFF>Esto reemplaza lo que el jugador tiene ahora.\n<#FF5555>Vuelve a hacer clic para confirmar.'
+    confirm-chat: '<#FFFFFF>Esto sobrescribirá el contenido actual. Haz clic otra vez en los próximos <#2ECC71>%SECONDS% s <#FFFFFF>para confirmar.'
+    readonly-denied: '<#FF5555>Estás en modo solo lectura: puedes ver los respaldos, pero no restaurar ni cambiar nada.'
+    readonly-info: '<#FF5555>✖ Modo solo lectura activo'
+
+  context:
+    button-name: '<#2ECC71>&lDatos de la muerte'
+    vehicle: '<#2ECC71>Montura: <#FFFFFF>%VALUE%'
+    pet: '<#2ECC71>Mascota: <#FFFFFF>%VALUE%'
+    clan: '<#2ECC71>Clan: <#FFFFFF>%VALUE%'
+  recent:
+    empty: '<#FFFFFF>Todavía no hay muertes registradas.'
+    location: '<#2ECC71>Ubicación: <#FFFFFF>%WORLD% %X% %Y% %Z%'
+    click: '<#FFFFFF>» <#2ECC71>Clic para ver el respaldo'
+    back-name: '<#FFFFFF>&lVolver al panel'
+    back-lore: '<#FFFFFF>Regresa al menú principal.'
